@@ -1,11 +1,10 @@
 using System;
-using System.Drawing;
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 public static class ScreenCapturer
 {
-    // WinAPI定義
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
@@ -18,15 +17,9 @@ public static class ScreenCapturer
         public int Left, Top, Right, Bottom;
     }
 
-    /// <summary>
-    /// プロセス名からウィンドウをキャプチャして Bitmap を返す
-    /// </summary>
-    /// <param name="processName">拡張子なしのプロセス名（例: ShadowverseWB）</param>
-    /// <returns>Bitmap または null</returns>
     public static Bitmap? CaptureWindowByProcessName(string processName)
     {
-        Process[] processes = Process.GetProcessesByName(processName);
-
+        var processes = Process.GetProcessesByName(processName);
         if (processes.Length == 0)
         {
             Console.WriteLine($"プロセスが見つかりません: {processName}");
@@ -34,16 +27,9 @@ public static class ScreenCapturer
         }
 
         IntPtr hWnd = processes[0].MainWindowHandle;
-
-        if (hWnd == IntPtr.Zero)
+        if (hWnd == IntPtr.Zero || !GetWindowRect(hWnd, out RECT rect))
         {
-            Console.WriteLine("ウィンドウハンドルが取得できません");
-            return null;
-        }
-
-        if (!GetWindowRect(hWnd, out RECT rect))
-        {
-            Console.WriteLine("ウィンドウの座標が取得できません");
+            Console.WriteLine("ウィンドウが取得できません");
             return null;
         }
 
