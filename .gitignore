@@ -2,3 +2,4 @@
 Templates/
 bin/
 obj/Debug/
+*.png
